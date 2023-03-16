@@ -36,18 +36,14 @@ class DiscordClient(discord.Client):
             return
 
         if message.content.lower().startswith("findme"):
-            self.stats[message.author] += 1
             try:
                 subreddit = message.content.split(" ")[1]
                 threshold = int(message.content.split(" ")[2])
-                await self.scrape_reddit(message, subreddit, threshold)
-            except:
+                await self.search_subreddit(message, subreddit, threshold)
+            except Exception as e:
                 await message.channel.send(
                     f"Example command usage: ```findme dankmemes 100```"
                 )
-
-        if message.content.lower() == "test_image":
-            await self.send_base64_image(message)
 
         if message.content.lower().startswith("fetch_last_item"):
             user = (" ").join(message.content.lower().split(" ")[1:])
@@ -77,7 +73,7 @@ class DiscordClient(discord.Client):
         reddit = asyncpraw.Reddit(
             client_id=config["reddit_client_id"],
             client_secret=config["reddit_client_secret"],
-            user_agent="crink-bot",
+            user_agent="disc-bot",
         )
 
         subreddit = await reddit.subreddit(subreddit, fetch=True)
@@ -97,11 +93,6 @@ class DiscordClient(discord.Client):
             await message.channel.send(embed=embed)
         else:
             await message.channel.send(choice)
-
-    """
-    async def collection_log_roulette(self):
-        pass
-    """
 
     async def plot_probability(self, message, trials, probability):
         """
